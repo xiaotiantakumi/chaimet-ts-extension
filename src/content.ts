@@ -1,5 +1,5 @@
 import { WordInfo } from "./chaimet";
-
+import { plainToClass } from 'class-transformer';
 
 let lastSelectedStr : string;
 let selection : Selection | null = null;
@@ -22,16 +22,23 @@ let func = () =>{
   // send current selected text 
   chrome.runtime.sendMessage({
     type: 'selectedMsg',
-    msg: lastSelectedStr
+    msg: lastSelectedStr,
+    href: window.location.href
   })
   console.log(selection?.toString());
 }
 setInterval(func, 500);
 
+
+let mouseEv : MouseEvent;
+document.addEventListener("mousemove",(ev : MouseEvent) => {
+  mouseEv = ev;
+})
+
 chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
   if (request.type === 'getWordInfo') {
-    // let wordInfo = Object.assign(new WordInfo(), request.msg);
-    let wordInfo : WordInfo = request.msg as WordInfo;
+    let wordInfo = plainToClass(WordInfo, request.msg as WordInfo);
+    wordInfo.toConsoleLog();
     if(selection == null) return
     let range = selection.getRangeAt(0).cloneRange();
     range.collapse(false);
@@ -53,14 +60,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
       str += wordInfo.pinyin + '</br>';
       str +=  wordInfo.description;
       tooltipEl.innerHTML = str;
-      // Find markerEl position http://www.quirksmode.org/js/findpos.html
-      let obj = markerEl;
-      let left = 0, top = 0;
-      do {
-        left += obj.offsetLeft;
-        top += obj.offsetTop;
-      } while (obj == obj.offsetParent);
-
+      // 現在のマウスポジションからツールチップの位置を特定させる
+      let left = mouseEv.pageX, top = mouseEv.pageY;
       left += 5;
       top += 5;
       tooltipEl.style.left = left + "px";

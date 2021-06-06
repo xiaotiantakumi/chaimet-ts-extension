@@ -1,16 +1,10 @@
-// class WordInfo {
-//     _site : string
-//     constructor(site : string) {
-//       this._site = site;  
-//     }
-// }
 export interface IWordInfo{
     get pinyin() : string;
     get description() : string;
     toConsoleLog() : void;
 }
 export class WordInfo implements IWordInfo {
-    private _site : string
+    private _href : string
     private _pinyinEle : HTMLCollectionOf<HTMLElement>
     private _descriptionEle: HTMLCollectionOf<HTMLElement>
     
@@ -30,14 +24,13 @@ export class WordInfo implements IWordInfo {
     public set description(v : string) {
         this._description = v;
     }
-    
-    constructor(site : string, pinyinEle : HTMLCollectionOf<HTMLElement>, descriptionEle: HTMLCollectionOf<HTMLElement>) {
-        this._site = site;
+    constructor(href : string, pinyinEle : HTMLCollectionOf<HTMLElement>, descriptionEle: HTMLCollectionOf<HTMLElement>) {
+        this._href = href;
         this._pinyinEle = pinyinEle;
         this._descriptionEle = descriptionEle;
         this.setPinyin();
         this.setDescription();
-        console.log(this._site);
+        console.log(this._href);
     }
     public toConsoleLog() {
         if (this.pinyin) {
@@ -48,6 +41,7 @@ export class WordInfo implements IWordInfo {
         }
     }
     private setPinyin() {
+        if(this._pinyinEle == null) return;
         let item = this._pinyinEle[0];
         if (item) {
             this.pinyin = item.innerText;
