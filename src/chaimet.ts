@@ -1,30 +1,30 @@
-export interface IWordInfo{
-    get pinyin() : string;
-    get description() : string;
-    toConsoleLog() : void;
+export interface IWordInfo {
+    get pinyin(): string;
+    get description(): string;
+    toConsoleLog(): void;
 }
 export class WordInfo implements IWordInfo {
-    private _href : string
-    private _pinyinEle : HTMLCollectionOf<HTMLElement>
+    private _href: string
+    private _pinyinEle: HTMLCollectionOf<HTMLElement>
     private _descriptionEle: HTMLCollectionOf<HTMLElement>
-    
-    private _pinyin : string = "";
-    public get pinyin() : string {
+
+    private _pinyin: string = "";
+    public get pinyin(): string {
         return this._pinyin;
     }
-    private set pinyin(v : string) {
+    private set pinyin(v: string) {
         this._pinyin = v;
     }
-    
-    
-    private _description : string = "";
-    public get description() : string {
+
+
+    private _description: string = "";
+    public get description(): string {
         return this._description;
     }
-    public set description(v : string) {
+    public set description(v: string) {
         this._description = v;
     }
-    constructor(href : string, pinyinEle : HTMLCollectionOf<HTMLElement>, descriptionEle: HTMLCollectionOf<HTMLElement>) {
+    constructor(href: string, pinyinEle: HTMLCollectionOf<HTMLElement>, descriptionEle: HTMLCollectionOf<HTMLElement>) {
         this._href = href;
         this._pinyinEle = pinyinEle;
         this._descriptionEle = descriptionEle;
@@ -41,7 +41,7 @@ export class WordInfo implements IWordInfo {
         }
     }
     private setPinyin() {
-        if(this._pinyinEle == null) return;
+        if (this._pinyinEle == null) return;
         let item = this._pinyinEle[0];
         if (item) {
             this.pinyin = item.innerText;

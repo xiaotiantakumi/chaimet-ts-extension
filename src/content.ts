@@ -1,18 +1,18 @@
 import { WordInfo } from "./chaimet";
 import { plainToClass } from 'class-transformer';
 
-let lastSelectedStr : string;
-let selection : Selection | null = null;
+let lastSelectedStr: string;
+let selection: Selection | null = null;
 let doc = window.document;
 let markerTextChar = "\ufeff";
-let tooltipEl : HTMLDivElement;
+let tooltipEl: HTMLDivElement;
 let markerEl, markerId = "sel_" + new Date().getTime() + "_" + Math.random().toString().substr(2);
 
-let func = () =>{
+let func = () => {
   selection = window.getSelection();
   let currentStr = selection?.toString();
   if (!currentStr) {
-    if(tooltipEl) tooltipEl.style.visibility = 'hidden';
+    if (tooltipEl) tooltipEl.style.visibility = 'hidden';
     return;
   }
   if (currentStr === lastSelectedStr) {
@@ -30,8 +30,8 @@ let func = () =>{
 setInterval(func, 500);
 
 
-let mouseEv : MouseEvent;
-document.addEventListener("mousemove",(ev : MouseEvent) => {
+let mouseEv: MouseEvent;
+document.addEventListener("mousemove", (ev: MouseEvent) => {
   mouseEv = ev;
 })
 
@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
   if (request.type === 'getWordInfo') {
     let wordInfo = plainToClass(WordInfo, request.msg as WordInfo);
     wordInfo.toConsoleLog();
-    if(selection == null) return
+    if (selection == null) return
     let range = selection.getRangeAt(0).cloneRange();
     range.collapse(false);
     // Create the marker element containing a single invisible character using DOM methods and insert it
@@ -58,8 +58,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
       tooltipEl.style.visibility = 'visible';
       let str = '';
       str += '<button id="chaimet-add-word" padding-right="3px">⊕単語</button>';
-      str += wordInfo.pinyin+ '</br>';
-      str +=  wordInfo.description;
+      str += wordInfo.pinyin + '</br>';
+      str += wordInfo.description;
       tooltipEl.innerHTML = str;
       // 現在のマウスポジションからツールチップの位置を特定させる
       let left = mouseEv.pageX;
