@@ -57,11 +57,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
       }
       tooltipEl.style.visibility = 'visible';
       let str = '';
-      str += wordInfo.pinyin + '</br>';
+      str += '<button id="chaimet-add-word" padding-right="3px">⊕単語</button>';
+      str += wordInfo.pinyin+ '</br>';
       str +=  wordInfo.description;
       tooltipEl.innerHTML = str;
       // 現在のマウスポジションからツールチップの位置を特定させる
-      let left = mouseEv.pageX, top = mouseEv.pageY;
+      let left = mouseEv.pageX;
+      let top = mouseEv.pageY;
       left += 5;
       top += 5;
       tooltipEl.style.left = left + "px";
