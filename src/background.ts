@@ -1,21 +1,22 @@
 // const moment = require('moment');
 import axios from 'axios';
-import { WordInfo } from './chaimet'
+import { WordInfo, SendMessageMode, ContentMessage } from './chaimet'
+import { plainToClass } from 'class-transformer';
 
 let fromTabId = -1;
 const baseUrl: string = "https://cjjc.weblio.jp/content/";
 chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
   fromTabId = sender?.tab?.id ?? -1;
   if (fromTabId == -1) return;
-
-  if (request.type === 'selectedMsg') {
-    let word = encodeURI(request.msg);
+  let contentMsg = plainToClass(ContentMessage, request.msg as ContentMessage);
+  if (contentMsg.type === SendMessageMode.SelectMsg) {
+    let word = encodeURI(contentMsg.searchWord);
     axios.get(baseUrl + word)
       .then((res) => {
         let doc = new DOMParser().parseFromString(res.data, "text/html");
         let titleEle = doc.getElementsByClassName('pnyn') as HTMLCollectionOf<HTMLElement>;
         let descriptionEle = doc.getElementsByClassName('level0') as HTMLCollectionOf<HTMLElement>;
-        let wordInfo = new WordInfo(request.href, titleEle, descriptionEle);
+        let wordInfo = new WordInfo(contentMsg.hRef, titleEle, descriptionEle);
         chrome.tabs.sendMessage(fromTabId, {
           type: 'getWordInfo',
           msg: wordInfo

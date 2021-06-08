@@ -1,4 +1,4 @@
-import { WordInfo } from "./chaimet";
+import { WordInfo, SendMessageMode, ContentMessage } from "./chaimet";
 import { plainToClass } from 'class-transformer';
 
 let lastSelectedStr: string;
@@ -20,10 +20,12 @@ let func = () => {
   }
   lastSelectedStr = currentStr;
   // send current selected text 
+  let contentMessage = new ContentMessage(SendMessageMode.SelectMsg);
+  contentMessage.searchWord = lastSelectedStr;
+  contentMessage.hRef = window.location.href;
+  contentMessage.selectedRageData = selection?.anchorNode?.nodeValue?.trim() ?? "";
   chrome.runtime.sendMessage({
-    type: 'selectedMsg',
-    msg: lastSelectedStr,
-    href: window.location.href
+    msg: contentMessage
   })
   console.log(selection?.toString());
 }

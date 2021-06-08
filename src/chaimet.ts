@@ -62,3 +62,49 @@ export class WordInfo implements IWordInfo {
         this._description = result;
     }
 }
+
+export enum SendMessageMode {
+    None = 0,
+    SelectMsg = 1
+}
+export interface IMessage {
+    type: SendMessageMode
+}
+export class ContentMessage implements IMessage {
+
+    private _type: SendMessageMode = SendMessageMode.None;
+    public get type(): SendMessageMode {
+        return this._type;
+    }
+    public set type(v: SendMessageMode) {
+        this._type = v;
+    }
+
+    private _searchWord: string = "";
+    public get searchWord(): string {
+        return this._searchWord;
+    }
+    public set searchWord(v: string) {
+        this._searchWord = v;
+    }
+
+    private _hRef: string = "";
+    public get hRef(): string {
+        return this._hRef;
+    }
+    public set hRef(v: string) {
+        this._hRef = v;
+    }
+
+    private _selectedRageData: string = "";
+    public get selectedRageData(): string {
+        return this._selectedRageData;
+    }
+    public set selectedRageData(v: string) {
+        this._selectedRageData = v;
+    }
+
+    constructor(type: SendMessageMode) {
+        this.type = type;
+    }
+}
