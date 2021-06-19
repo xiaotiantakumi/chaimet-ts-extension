@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "chaimet",
   "short_name": "chaimet",
-  "description": "chaimet",
+  "description": "チャイメットと読みます。",
   "version": "0.0.1",
   "author": "Takumi Oda",
 
@@ -47,9 +47,6 @@
   ],
 
   "permissions": [
-    "tabs", 
-    "clipboardWrite", 
-    "contextMenus", 
-    "storage"
+    "tabs"
   ]
 }
