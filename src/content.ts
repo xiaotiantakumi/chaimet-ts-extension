@@ -79,9 +79,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
 
 function CreateTooltipElement() {
   tooltipEl = doc.createElement("div");
-  tooltipEl.style.border = "solid darkblue 1px";
-  tooltipEl.style.backgroundColor = "lightgoldenrodyellow";
+  tooltipEl.style.border = "solid black 3px";
+  tooltipEl.style.backgroundColor = "lightyellow";
   tooltipEl.style.position = "absolute";
   tooltipEl.style.zIndex = "100";
+  tooltipEl.style.borderRadius = "20px";
+  tooltipEl.style.padding = "10px";
   doc.body.appendChild(tooltipEl);
 }
