@@ -5,6 +5,10 @@ export interface IWordInfo {
 }
 export class WordInfo implements IWordInfo {
     private _href: string
+    private _searchUrl: string;
+    public get searchUrl(): string {
+        return this._searchUrl;
+    }
     private _pinyinEle: HTMLCollectionOf<HTMLElement>
     private _descriptionEle: HTMLCollectionOf<HTMLElement>
 
@@ -24,10 +28,11 @@ export class WordInfo implements IWordInfo {
     public set description(v: string) {
         this._description = v;
     }
-    constructor(href: string, pinyinEle: HTMLCollectionOf<HTMLElement>, descriptionEle: HTMLCollectionOf<HTMLElement>) {
+    constructor(href: string, searchUrl : string, pinyinEle: HTMLCollectionOf<HTMLElement>, descriptionEle: HTMLCollectionOf<HTMLElement>) {
         this._href = href;
         this._pinyinEle = pinyinEle;
         this._descriptionEle = descriptionEle;
+        this._searchUrl = searchUrl;
         this.setPinyin();
         this.setDescription();
         console.log(this._href);

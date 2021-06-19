@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
         let doc = new DOMParser().parseFromString(res.data, "text/html");
         let titleEle = doc.getElementsByClassName('pnyn') as HTMLCollectionOf<HTMLElement>;
         let descriptionEle = doc.getElementsByClassName('level0') as HTMLCollectionOf<HTMLElement>;
-        let wordInfo = new WordInfo(contentMsg.hRef, titleEle, descriptionEle);
+        let wordInfo = new WordInfo(contentMsg.hRef,res.request.responseURL, titleEle, descriptionEle);
         chrome.tabs.sendMessage(fromTabId, {
           type: 'getWordInfo',
           msg: wordInfo

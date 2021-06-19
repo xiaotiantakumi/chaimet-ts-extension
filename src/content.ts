@@ -59,8 +59,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
       }
       tooltipEl.style.visibility = 'visible';
       let str = '';
-      str += '<button id="chaimet-add-word" padding-right="3px">⊕単語</button>';
-      str += wordInfo.pinyin + '</br>';
+      // str += '<button id="chaimet-add-word" padding-right="3px">⊕単語</button>';
+      str += `<a href="${wordInfo.searchUrl}" target="_blank" rel="noopener noreferrer" >` + wordInfo.pinyin + '</a>' + '</br>';
+      str += '</br>';
       str += wordInfo.description;
       tooltipEl.innerHTML = str;
       // 現在のマウスポジションからツールチップの位置を特定させる
