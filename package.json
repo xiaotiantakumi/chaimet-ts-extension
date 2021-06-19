@@ -1,5 +1,5 @@
 {
-  "name": "chaimet-ts-extension",
+  "name": "chaimet",
   "repository": "https://github.com/xiaotiantakumi/chaimet-ts-extension",
   "author": "takumi oda",
   "license": "MIT",
@@ -7,6 +7,8 @@
     "dev": "webpack --config webpack.dev.js",
     "watch": "webpack --config webpack.dev.js --watch",
     "prod": "webpack --config webpack.prod.js",
+    "mkdir:release": "npx mkdirp release",
+    "prerelease": "run-s mkdir:release prod",
     "release": "node release $1"
   },
   "devDependencies": {
