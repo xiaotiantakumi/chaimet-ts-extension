@@ -3,47 +3,45 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
-    content: './src/content.ts',
-    background: './src/background.ts',
-    options: './src/options.ts',
+    content: "./src/content.ts",
+    background: "./src/background.ts",
+    options: "./src/options.ts",
   },
   plugins: [
     new CleanWebpackPlugin(),
     new CopyPlugin({
       patterns: [
-        { from: 'src/manifest.json' },
+        { from: "src/manifest.json" },
         {
-          from: 'src/assets',
+          from: "src/assets",
           globOptions: {
-            ignore: [
-              '**/stylesheets/**',
-            ],
+            ignore: ["**/stylesheets/**"],
           },
         },
-        { from: 'src/options.html' },
-      ]
+        { from: "src/options.html" },
+      ],
     }),
   ],
   output: {
     path: `${__dirname}/dist`,
-    filename: '[name].js',
+    filename: "[name].js",
   },
   module: {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/
+        loader: "ts-loader",
+        exclude: /node_modules/,
       },
       {
         test: /\.s[ac]ss$/i,
         use: [
           // Creates `style` nodes from JS strings
-          'style-loader',
+          "style-loader",
           // Translates CSS into CommonJS
-          'css-loader',
+          "css-loader",
           // Compiles Sass to CSS
-          'sass-loader',
+          "sass-loader",
         ],
       },
     ],
@@ -52,6 +50,12 @@ module.exports = {
     ignored: /node_modules/,
   },
   resolve: {
-    extensions: [".js", ".ts"]
+    extensions: [".js", ".ts"],
+  },
+  node: {
+    child_process: "empty",
+    fs: "empty", // if unable to resolve "fs"
+    net: "empty",
+    tls: "empty",
   },
 };

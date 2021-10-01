@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
-  "name": "chaimet",
-  "short_name": "chaimet",
-  "description": "チャイメットと読みます。",
+  "manifest_version": 3,
+  "name": "ts chrome extension template",
+  "short_name": "ts chrome extension template",
+  "description": "ts chrome extension template",
   "version": "0.0.1",
   "author": "Takumi Oda",
 
@@ -15,24 +15,16 @@
 
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "run_at": "document_end",
-      "js": [
-        "content.js"
-      ],
-      "all_frames": true,
+      "matches": ["https://www.baidu.com/*"],
+      "js": ["content.js"],
       "css": []
     }
   ],
 
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": true
+    "service_worker": "background.js"
   },
-
-  "browser_action": {
+  "action": {
     "default_popup": "options.html",
     "default_icon": {
       "16": "icons/16.png",
@@ -43,10 +35,12 @@
   },
 
   "web_accessible_resources": [
-    "icons/*"
+    {
+      "resources": ["icons/*", "icon-128.png", "icon-34.png"],
+      "matches": []
+    }
   ],
 
-  "permissions": [
-    "tabs"
-  ]
+  "permissions": ["tabs"],
+  "host_permissions": ["https://cjjc.weblio.jp/content/*"]
 }

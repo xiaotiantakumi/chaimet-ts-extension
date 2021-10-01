@@ -1,37 +1,56 @@
 // const moment = require('moment');
-import axios from 'axios';
-import { WordInfo, SendMessageMode, ContentMessage } from './chaimet'
-import { plainToClass } from 'class-transformer';
+import axios from "axios";
+import { WordInfo, SendMessageMode, ContentMessage } from "./chaimet";
+import { plainToClass } from "class-transformer";
+import { JSDOM } from "jsdom";
 
 let fromTabId = -1;
 const baseUrl: string = "https://cjjc.weblio.jp/content/";
-chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
   fromTabId = sender?.tab?.id ?? -1;
   if (fromTabId == -1) return;
-  let contentMsg = plainToClass(ContentMessage, request.msg as ContentMessage);
+  const contentMsg = plainToClass(
+    ContentMessage,
+    request.msg as ContentMessage
+  );
   if (contentMsg.type === SendMessageMode.SelectMsg) {
-    let word = encodeURI(contentMsg.searchWord);
-    axios.get(baseUrl + word)
-      .then((res) => {
-        let doc = new DOMParser().parseFromString(res.data, "text/html");
-        let titleEle = doc.getElementsByClassName('pnyn') as HTMLCollectionOf<HTMLElement>;
-        let descriptionEle = doc.getElementsByClassName('level0') as HTMLCollectionOf<HTMLElement>;
-        let wordInfo = new WordInfo(contentMsg.hRef,res.request.responseURL, titleEle, descriptionEle);
-        chrome.tabs.sendMessage(fromTabId, {
-          type: 'getWordInfo',
-          msg: wordInfo
-        });
-
-        // すべてのタブを取得して何かしらの操作をする
-        chrome.tabs.query({}, afterGetAllTabs);
-      })
-      .catch((error) => {
-        console.log('ERROR!! occurred in Backend.')
+    const word = encodeURI(contentMsg.searchWord);
+    try {
+      const res = await fetch(baseUrl + word, {
+        method: "GET",
+        mode: "cors",
       });
+      const txt = await res.text();
+      const jsdom = new JSDOM();
+      const jsdom2 = new JSDOM();
+      console.log(jsdom2);
+      const parser = new jsdom.window.DOMParser();
+      const doc = parser.parseFromString(txt, "text/html");
+      const titleEle = doc.getElementsByClassName(
+        "pnyn"
+      ) as HTMLCollectionOf<HTMLElement>;
+      const descriptionEle = doc.getElementsByClassName(
+        "level0"
+      ) as HTMLCollectionOf<HTMLElement>;
+      const wordInfo = new WordInfo(
+        contentMsg.hRef,
+        res.url,
+        titleEle,
+        descriptionEle
+      );
+      chrome.tabs.sendMessage(fromTabId, {
+        type: "getWordInfo",
+        msg: wordInfo,
+      });
+      // すべてのタブを取得して何かしらの操作をする
+      // chrome.tabs.query({}, afterGetAllTabs);
+    } catch (error) {
+      console.log(error);
+    }
   }
-})
+});
 
-const urlPtn = '';
+const urlPtn = "";
 function afterGetAllTabs(tabs: chrome.tabs.Tab[]) {
   let hasTab = false;
   tabs.forEach((tab) => {

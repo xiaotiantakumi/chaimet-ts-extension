@@ -9,25 +9,29 @@ let tooltipEl: HTMLDivElement;
 let markerEl, markerId = "sel_" + new Date().getTime() + "_" + Math.random().toString().substr(2);
 
 let func = () => {
-  selection = window.getSelection();
-  let currentStr = selection?.toString();
-  if (!currentStr) {
-    if (tooltipEl) tooltipEl.style.visibility = 'hidden';
-    return;
+  try {
+    selection = window.getSelection();
+    let currentStr = selection?.toString();
+    if (!currentStr) {
+      if (tooltipEl) tooltipEl.style.visibility = 'hidden';
+      return;
+    }
+    if (currentStr === lastSelectedStr) {
+      return;
+    }
+    lastSelectedStr = currentStr;
+    // send current selected text 
+    let contentMessage = new ContentMessage(SendMessageMode.SelectMsg);
+    contentMessage.searchWord = lastSelectedStr;
+    contentMessage.hRef = window.location.href;
+    contentMessage.selectedRageData = selection?.anchorNode?.nodeValue?.trim() ?? "";
+    chrome.runtime.sendMessage({
+      msg: contentMessage
+    })
+    console.log(selection?.toString());
+  } catch (error) {
+    console.log(error);
   }
-  if (currentStr === lastSelectedStr) {
-    return;
-  }
-  lastSelectedStr = currentStr;
-  // send current selected text 
-  let contentMessage = new ContentMessage(SendMessageMode.SelectMsg);
-  contentMessage.searchWord = lastSelectedStr;
-  contentMessage.hRef = window.location.href;
-  contentMessage.selectedRageData = selection?.anchorNode?.nodeValue?.trim() ?? "";
-  chrome.runtime.sendMessage({
-    msg: contentMessage
-  })
-  console.log(selection?.toString());
 }
 setInterval(func, 500);
 
