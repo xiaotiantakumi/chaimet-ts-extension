@@ -1,51 +1,71 @@
 import { WordInfo, SendMessageMode, ContentMessage } from "./chaimet";
-import { plainToClass } from 'class-transformer';
 
+// 最後に選択した文字列(再表示させるかを判定するために使用)
 let lastSelectedStr: string;
+// 現在ユーザが選択している文字列
 let selection: Selection | null = null;
-let doc = window.document;
-let markerTextChar = "\ufeff";
+// document
+const doc: Document = window.document;
+const markerTextChar: string = "\ufeff";
 let tooltipEl: HTMLDivElement;
-let markerEl, markerId = "sel_" + new Date().getTime() + "_" + Math.random().toString().substr(2);
+let markerEl: HTMLSpanElement;
+const markerId: string =
+  "sel_" + new Date().getTime() + "_" + Math.random().toString().substring(2);
+let contentMessage: ContentMessage;
 
-let func = () => {
+let sendBgMsgfunc = () => {
   try {
     selection = window.getSelection();
     let currentStr = selection?.toString();
     if (!currentStr) {
-      if (tooltipEl) tooltipEl.style.visibility = 'hidden';
+      if (tooltipEl) tooltipEl.style.visibility = "hidden";
       return;
     }
     if (currentStr === lastSelectedStr) {
       return;
     }
     lastSelectedStr = currentStr;
-    // send current selected text 
-    let contentMessage = new ContentMessage(SendMessageMode.SelectMsg);
+    // send current selected text
+    contentMessage = new ContentMessage(SendMessageMode.SelectMsg);
     contentMessage.searchWord = lastSelectedStr;
     contentMessage.hRef = window.location.href;
-    contentMessage.selectedRageData = selection?.anchorNode?.nodeValue?.trim() ?? "";
+    contentMessage.selectedRageData =
+      selection?.anchorNode?.nodeValue?.trim() ?? "";
     chrome.runtime.sendMessage({
-      msg: contentMessage
-    })
+      msg: contentMessage,
+    });
     console.log(selection?.toString());
   } catch (error) {
     console.log(error);
   }
-}
-setInterval(func, 500);
-
+};
+setInterval(sendBgMsgfunc, 500);
 
 let mouseEv: MouseEvent;
 document.addEventListener("mousemove", (ev: MouseEvent) => {
   mouseEv = ev;
-})
+});
 
-chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
-  if (request.type === 'getWordInfo') {
-    let wordInfo = plainToClass(WordInfo, request.msg as WordInfo);
+chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
+  if (request.type === "getWordInfo" && request.isActiveMode) {
+    let requestDocument = new DOMParser().parseFromString(
+      request.dom,
+      "text/html"
+    );
+    let titleEle = requestDocument.getElementsByClassName(
+      "pnyn"
+    ) as HTMLCollectionOf<HTMLElement>;
+    let descriptionEle = requestDocument.getElementsByClassName(
+      "level0"
+    ) as HTMLCollectionOf<HTMLElement>;
+    let wordInfo = new WordInfo(
+      contentMessage.hRef,
+      "",
+      titleEle,
+      descriptionEle
+    );
     wordInfo.toConsoleLog();
-    if (selection == null) return
+    if (selection == null) return;
     let range = selection.getRangeAt(0).cloneRange();
     range.collapse(false);
     // Create the marker element containing a single invisible character using DOM methods and insert it
@@ -61,11 +81,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
       if (!wordInfo.pinyin) {
         return;
       }
-      tooltipEl.style.visibility = 'visible';
-      let str = '';
-      // str += '<button id="chaimet-add-word" padding-right="3px">⊕単語</button>';
-      str += `<a href="${wordInfo.searchUrl}" target="_blank" rel="noopener noreferrer" >` + wordInfo.pinyin + '</a>' + '</br>';
-      str += '</br>';
+      tooltipEl.style.visibility = "visible";
+      let str = "";
+      str +=
+        `<a href="${wordInfo.searchUrl}" target="_blank" rel="noopener noreferrer" >` +
+        wordInfo.pinyin +
+        "</a>" +
+        "</br>";
+      str += "</br>";
       str += wordInfo.description;
       tooltipEl.innerHTML = str;
       // 現在のマウスポジションからツールチップの位置を特定させる
@@ -79,7 +102,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
       markerEl.parentNode?.removeChild(markerEl);
     }
   }
-})
+});
 
 function CreateTooltipElement() {
   tooltipEl = doc.createElement("div");
