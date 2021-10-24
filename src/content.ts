@@ -47,7 +47,9 @@ document.addEventListener("mousemove", (ev: MouseEvent) => {
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
-  if (request.type === "getWordInfo" && request.isActiveMode) {
+  // isActiveModeがservice worker側でうまく制御できていない。local strageとか使って
+  //if (request.type === "getWordInfo" && request.isActiveMode) {
+  if (request.type === "getWordInfo") {
     let requestDocument = new DOMParser().parseFromString(
       request.dom,
       "text/html"
@@ -58,9 +60,9 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
     let descriptionEle = requestDocument.getElementsByClassName(
       "level0"
     ) as HTMLCollectionOf<HTMLElement>;
-    let wordInfo = new WordInfo(
+    const wordInfo = new WordInfo(
       contentMessage.hRef,
-      "",
+      request?.requestUrl,
       titleEle,
       descriptionEle
     );
@@ -92,12 +94,14 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
       str += wordInfo.description;
       tooltipEl.innerHTML = str;
       // 現在のマウスポジションからツールチップの位置を特定させる
-      let left = mouseEv.pageX;
-      let top = mouseEv.pageY;
-      left += 5;
-      top += 5;
-      tooltipEl.style.left = left + "px";
-      tooltipEl.style.top = top + "px";
+      if (mouseEv) {
+        let left = mouseEv.pageX;
+        let top = mouseEv.pageY;
+        left += 5;
+        top += 5;
+        tooltipEl.style.left = left + "px";
+        tooltipEl.style.top = top + "px";
+      }
 
       markerEl.parentNode?.removeChild(markerEl);
     }
