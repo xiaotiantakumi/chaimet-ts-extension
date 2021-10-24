@@ -47,8 +47,6 @@ document.addEventListener("mousemove", (ev: MouseEvent) => {
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
-  // isActiveModeがservice worker側でうまく制御できていない。local strageとか使って
-  //if (request.type === "getWordInfo" && request.isActiveMode) {
   if (request.type === "getWordInfo") {
     let requestDocument = new DOMParser().parseFromString(
       request.dom,
