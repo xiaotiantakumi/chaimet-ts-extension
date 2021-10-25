@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "chaimet",
+  "name": "中国語サーチchaimet",
   "short_name": "chaimet",
-  "description": "チャイメットと読みます。",
+  "description": "中国語サーチchaimet(チャイメットと読みます。)は、中国語学習者に便利な機能を提供する拡張機能です。",
   "version": "0.0.2",
   "author": "Takumi Oda",
 
