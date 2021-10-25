@@ -1,18 +1,22 @@
 import { SendMessageMode, ContentMessage } from "./chaimet";
 import { plainToClass } from "class-transformer";
 chrome.action.onClicked.addListener(async (tab) => {
-  if (Number.isNaN(tab.id)) {
-    return;
-  }
-  const tabId = Number(tab.id);
-  chrome.action.setBadgeText({ text: "有効", tabId: tabId });
+  try {
+    if (Number.isNaN(tab.id)) {
+      return;
+    }
+    const tabId = Number(tab.id);
+    chrome.action.setBadgeText({ text: "有効", tabId: tabId });
 
-  // 過去に有効化したことがあるかで読み込むか切替したかったが
-  // 再読み込み時にtabIdが同じで読込まれなくなるため断念
-  await chrome.scripting.executeScript({
-    target: { tabId: Number(tab.id) },
-    files: ["content.js"],
-  });
+    // 過去に有効化したことがあるかで読み込むか切替したかったが
+    // 再読み込み時にtabIdが同じで読込まれなくなるため断念
+    await chrome.scripting.executeScript({
+      target: { tabId: Number(tab.id) },
+      files: ["content.js"],
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 let fromTabId = -1;
