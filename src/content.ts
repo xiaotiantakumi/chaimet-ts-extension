@@ -47,62 +47,66 @@ document.addEventListener("mousemove", (ev: MouseEvent) => {
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendMessage) => {
-  if (request.type === "getWordInfo") {
-    let requestDocument = new DOMParser().parseFromString(
-      request.dom,
-      "text/html"
-    );
-    let titleEle = requestDocument.getElementsByClassName(
-      "pnyn"
-    ) as HTMLCollectionOf<HTMLElement>;
-    let descriptionEle = requestDocument.getElementsByClassName(
-      "level0"
-    ) as HTMLCollectionOf<HTMLElement>;
-    const wordInfo = new WordInfo(
-      contentMessage.hRef,
-      request?.requestUrl,
-      titleEle,
-      descriptionEle
-    );
-    wordInfo.toConsoleLog();
-    if (selection == null) return;
-    let range = selection.getRangeAt(0).cloneRange();
-    range.collapse(false);
-    // Create the marker element containing a single invisible character using DOM methods and insert it
-    markerEl = doc.createElement("span");
-    markerEl.id = markerId;
-    markerEl.appendChild(doc.createTextNode(markerTextChar));
-    range.insertNode(markerEl);
-    if (markerEl) {
-      // Lazily create element to be placed next to the selection
-      if (!tooltipEl) {
-        CreateTooltipElement();
-      }
-      if (!wordInfo.pinyin) {
-        return;
-      }
-      tooltipEl.style.visibility = "visible";
-      let str = "";
-      str +=
-        `<a href="${wordInfo.searchUrl}" target="_blank" rel="noopener noreferrer" >` +
-        wordInfo.pinyin +
-        "</a>" +
-        "</br>";
-      str += "</br>";
-      str += wordInfo.description;
-      tooltipEl.innerHTML = str;
-      // 現在のマウスポジションからツールチップの位置を特定させる
-      if (mouseEv) {
-        let left = mouseEv.pageX;
-        let top = mouseEv.pageY;
-        left += 5;
-        top += 5;
-        tooltipEl.style.left = left + "px";
-        tooltipEl.style.top = top + "px";
-      }
+  try {
+    if (request.type === "getWordInfo") {
+      let requestDocument = new DOMParser().parseFromString(
+        request.dom,
+        "text/html"
+      );
+      let titleEle = requestDocument.getElementsByClassName(
+        "pnyn"
+      ) as HTMLCollectionOf<HTMLElement>;
+      let descriptionEle = requestDocument.getElementsByClassName(
+        "level0"
+      ) as HTMLCollectionOf<HTMLElement>;
+      const wordInfo = new WordInfo(
+        contentMessage.hRef,
+        request?.requestUrl,
+        titleEle,
+        descriptionEle
+      );
+      wordInfo.toConsoleLog();
+      if (selection == null) return;
+      let range = selection.getRangeAt(0).cloneRange();
+      range.collapse(false);
+      // Create the marker element containing a single invisible character using DOM methods and insert it
+      markerEl = doc.createElement("span");
+      markerEl.id = markerId;
+      markerEl.appendChild(doc.createTextNode(markerTextChar));
+      range.insertNode(markerEl);
+      if (markerEl) {
+        // Lazily create element to be placed next to the selection
+        if (!tooltipEl) {
+          CreateTooltipElement();
+        }
+        if (!wordInfo.pinyin) {
+          return;
+        }
+        tooltipEl.style.visibility = "visible";
+        let str = "";
+        str +=
+          `<a href="${wordInfo.searchUrl}" target="_blank" rel="noopener noreferrer" >` +
+          wordInfo.pinyin +
+          "</a>" +
+          "</br>";
+        str += "</br>";
+        str += wordInfo.description;
+        tooltipEl.innerHTML = str;
+        // 現在のマウスポジションからツールチップの位置を特定させる
+        if (mouseEv) {
+          let left = mouseEv.pageX;
+          let top = mouseEv.pageY;
+          left += 5;
+          top += 5;
+          tooltipEl.style.left = left + "px";
+          tooltipEl.style.top = top + "px";
+        }
 
-      markerEl.parentNode?.removeChild(markerEl);
+        markerEl.parentNode?.removeChild(markerEl);
+      }
     }
+  } catch (error) {
+    console.log(error);
   }
 });
 
